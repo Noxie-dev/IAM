@@ -1,0 +1,16 @@
+/**
+ * FileUpload Component Styles
+ * Phase 3: Frontend Enhancement
+ */
+
+.progressBar {
+  width: var(--progress-width, 0%);
+  background-color: #2563eb; /* bg-blue-600 */
+  height: 0.25rem; /* h-1 */
+  border-radius: 9999px; /* rounded-full */
+  transition: width 0.3s ease; /* transition for smooth progress animation */
+}
+
+.progressContainer {
+  position: relative;
+}

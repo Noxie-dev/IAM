@@ -1,0 +1,191 @@
+/* FAQ Component Specific Styles */
+.faq-container {
+  /* Force dark theme styling */
+  color-scheme: dark;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  min-height: 100vh;
+  color: white;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.faq-container * {
+  color: inherit;
+}
+
+/* Typography fixes with responsive scaling */
+.faq-container h1 {
+  color: white !important;
+  font-size: clamp(2.5rem, 5vw, 4rem) !important;
+  line-height: 1.1 !important;
+  font-weight: 700 !important;
+  background: linear-gradient(135deg, #ffffff 0%, #e5e7eb 50%, #d1d5db 100%) !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  text-align: center !important;
+}
+
+/* Fallback for browsers that don't support background-clip */
+@supports not (background-clip: text) {
+  .faq-container h1 {
+    color: white !important;
+    -webkit-text-fill-color: unset !important;
+  }
+}
+
+.faq-container h2 {
+  color: white !important;
+  font-size: clamp(1.5rem, 3vw, 2rem) !important;
+  font-weight: 600 !important;
+}
+
+.faq-container h3 {
+  color: white !important;
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem) !important;
+  font-weight: 600 !important;
+}
+
+.faq-container p {
+  color: rgba(209, 213, 219, 0.9) !important;
+  font-size: clamp(1rem, 1.5vw, 1.25rem) !important;
+  line-height: 1.6 !important;
+}
+
+.faq-container span {
+  color: inherit !important;
+}
+
+/* Enhanced input styling */
+.faq-container input {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  font-size: 1rem !important;
+  padding: 1rem 3rem !important;
+  border-radius: 0.75rem !important;
+}
+
+.faq-container input::placeholder {
+  color: rgba(156, 163, 175, 0.8) !important;
+}
+
+.faq-container input:focus {
+  border-color: rgba(59, 130, 246, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Enhanced card styling */
+.faq-container .group {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 1rem !important;
+  padding: 1.5rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.faq-container .group:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Button enhancements */
+.faq-container button {
+  opacity: 1 !important;
+  transition: all 0.2s ease !important;
+}
+
+.faq-container button:hover {
+  transform: translateY(-1px) !important;
+}
+
+/* Category button styling */
+.faq-container .bg-gradient-to-r {
+  opacity: 1 !important;
+  font-weight: 500 !important;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .faq-container {
+    padding: 1rem !important;
+  }
+  
+  .faq-container h1 {
+    font-size: 2.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .faq-container p {
+    font-size: 1rem !important;
+  }
+  
+  .faq-container input {
+    padding: 0.875rem 2.5rem !important;
+    font-size: 0.95rem !important;
+  }
+}
+
+/* Color overrides */
+.faq-container .text-gray-400 {
+  color: rgba(156, 163, 175, 0.9) !important;
+}
+
+.faq-container .text-gray-300 {
+  color: rgba(209, 213, 219, 0.95) !important;
+}
+
+.faq-container .text-white {
+  color: white !important;
+}
+
+.faq-container .text-blue-300 {
+  color: rgba(147, 197, 253, 1) !important;
+}
+
+.faq-container .text-blue-400 {
+  color: rgba(96, 165, 250, 1) !important;
+}
+
+/* Modal improvements */
+.faq-container [role="dialog"] {
+  backdrop-filter: blur(20px) !important;
+}
+
+/* Sticky header enhancements */
+.faq-container header {
+  transition: all 0.3s ease !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.faq-container header:hover {
+  background: rgba(15, 23, 42, 0.9) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Smooth scroll behavior */
+.faq-container {
+  scroll-behavior: smooth !important;
+}
+
+/* Adjust main content padding to account for sticky header */
+.faq-container main {
+  padding-top: 2rem !important;
+}
+
+/* Ensure proper z-index stacking */
+.faq-container header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 50 !important;
+}
+
+/* Animation performance */
+.faq-container * {
+  backface-visibility: hidden !important;
+  transform-style: preserve-3d !important;
+}

@@ -1,0 +1,240 @@
+name: Audio Enhancement Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'phase2_backend_enhancement/**'
+      - '.github/workflows/audio-enhancement-tests.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'phase2_backend_enhancement/**'
+      - '.github/workflows/audio-enhancement-tests.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11, 3.12]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          ffmpeg \
+          libsndfile1 \
+          libsndfile1-dev \
+          libasound2-dev \
+          portaudio19-dev \
+          build-essential \
+          pkg-config
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install Python dependencies
+      working-directory: phase2_backend_enhancement
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-audio.txt
+        pip install -r requirements-test.txt
+    
+    - name: Check dependencies
+      working-directory: phase2_backend_enhancement
+      run: python run_tests.py --check-deps
+    
+    - name: Run unit tests
+      working-directory: phase2_backend_enhancement
+      run: python run_tests.py unit
+    
+    - name: Run audio enhancement tests
+      working-directory: phase2_backend_enhancement
+      run: python run_tests.py audio
+    
+    - name: Run storage service tests
+      working-directory: phase2_backend_enhancement
+      run: python run_tests.py storage
+    
+    - name: Run transcription service tests
+      working-directory: phase2_backend_enhancement
+      run: python run_tests.py transcription
+    
+    - name: Run code quality checks
+      working-directory: phase2_backend_enhancement
+      run: python run_tests.py lint
+    
+    - name: Generate test coverage report
+      working-directory: phase2_backend_enhancement
+      run: |
+        python -m pytest tests/ \
+          -m "not integration" \
+          --cov=app \
+          --cov-report=xml \
+          --cov-report=html \
+          --cov-fail-under=70
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: phase2_backend_enhancement/coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results-${{ matrix.python-version }}
+        path: |
+          phase2_backend_enhancement/htmlcov/
+          phase2_backend_enhancement/test_report.html
+          phase2_backend_enhancement/coverage.xml
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg libsndfile1
+    
+    - name: Install Python dependencies
+      working-directory: phase2_backend_enhancement
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-audio.txt
+        pip install -r requirements-test.txt
+    
+    - name: Run integration tests
+      working-directory: phase2_backend_enhancement
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+        S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+        S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+        S3_ENDPOINT_URL: ${{ secrets.S3_ENDPOINT_URL }}
+      run: python run_tests.py integration
+    
+    - name: Upload integration test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: integration-test-results
+        path: |
+          phase2_backend_enhancement/test_report.html
+
+  performance-tests:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg libsndfile1
+    
+    - name: Install Python dependencies
+      working-directory: phase2_backend_enhancement
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-audio.txt
+        pip install -r requirements-test.txt
+    
+    - name: Run performance tests
+      working-directory: phase2_backend_enhancement
+      run: python run_tests.py performance
+    
+    - name: Upload performance results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: performance-test-results
+        path: |
+          phase2_backend_enhancement/benchmark.json
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Build Docker image
+      working-directory: phase2_backend_enhancement
+      run: |
+        docker build -f Dockerfile.audio -t iam-backend-audio:test .
+    
+    - name: Test Docker image
+      run: |
+        docker run --rm iam-backend-audio:test python -c "
+        from app.services.audio_enhancement import AudioEnhancementService;
+        service = AudioEnhancementService();
+        print('✅ Audio enhancement service initialized successfully')
+        "
+
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run security scan
+      uses: pypa/gh-action-pip-audit@v1.0.8
+      with:
+        inputs: phase2_backend_enhancement/requirements.txt phase2_backend_enhancement/requirements-audio.txt
+        format: json
+        output: security-report.json
+    
+    - name: Upload security report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: security-report
+        path: security-report.json

@@ -1,0 +1,107 @@
+# Pre-commit hooks for IAM Audio Enhancement
+# Install with: pip install pre-commit && pre-commit install
+
+repos:
+  # Code formatting
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        language_version: python3
+        files: ^phase2_backend_enhancement/
+        args: [--line-length=100]
+
+  # Import sorting
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        files: ^phase2_backend_enhancement/
+        args: [--profile=black, --line-length=100]
+
+  # Linting
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        files: ^phase2_backend_enhancement/
+        args: [--max-line-length=100, --extend-ignore=E203,W503]
+
+  # Type checking
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        files: ^phase2_backend_enhancement/app/
+        additional_dependencies: [types-requests, types-redis]
+        args: [--ignore-missing-imports, --no-strict-optional]
+
+  # Security scanning
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        files: ^phase2_backend_enhancement/
+        args: [-r, -x, tests/]
+
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        files: ^phase2_backend_enhancement/
+      - id: end-of-file-fixer
+        files: ^phase2_backend_enhancement/
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=10000]  # 10MB limit
+      - id: debug-statements
+        files: ^phase2_backend_enhancement/
+
+  # Documentation
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        files: ^phase2_backend_enhancement/app/
+        args: [--convention=google]
+
+  # Audio Enhancement specific tests
+  - repo: local
+    hooks:
+      - id: audio-enhancement-tests
+        name: Audio Enhancement Unit Tests
+        entry: bash -c 'cd phase2_backend_enhancement && python run_tests.py unit'
+        language: system
+        files: ^phase2_backend_enhancement/(app|tests)/.*\.py$
+        pass_filenames: false
+
+      - id: test-coverage-check
+        name: Test Coverage Check
+        entry: bash -c 'cd phase2_backend_enhancement && python -m pytest tests/ -m "not integration" --cov=app --cov-fail-under=70 --quiet'
+        language: system
+        files: ^phase2_backend_enhancement/(app|tests)/.*\.py$
+        pass_filenames: false
+
+      - id: requirements-check
+        name: Requirements Security Check
+        entry: bash -c 'cd phase2_backend_enhancement && pip-audit -r requirements.txt -r requirements-audio.txt --format=json --output=security-audit.json || true'
+        language: system
+        files: ^phase2_backend_enhancement/requirements.*\.txt$
+        pass_filenames: false
+
+# Configuration for specific hooks
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: [audio-enhancement-tests, test-coverage-check, requirements-check]  # Skip heavy tests in CI
+  submodules: false
