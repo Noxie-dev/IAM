@@ -1,7 +1,8 @@
 import React from 'react';
-import { Settings, Users, Mail, Bell, Shield } from 'lucide-react';
+import { User, Settings, Users, Mail, Bell, Shield } from 'lucide-react';
 
 const TABS = [
+  { id: 'profile', label: 'Profile', icon: User },
   { id: 'preferences', label: 'Preferences', icon: Settings },
   { id: 'team', label: 'Team', icon: Users },
   { id: 'inbox', label: 'Inbox', icon: Mail },

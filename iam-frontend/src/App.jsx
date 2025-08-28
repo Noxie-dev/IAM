@@ -4,6 +4,8 @@ import LandingPage from './components/LandingPage'
 import MainApp from './components/MainApp'
 import AuthModal from './components/AuthModal'
 import FAQPage from './features/faq'
+import ProfilePage from './features/profile/ProfilePage'
+import { UserProvider } from './context/UserContext'
 import './App.css'
 
 function App() {
@@ -74,8 +76,9 @@ function App() {
   }
 
   return (
-    <Router>
-      <div className="App">
+    <UserProvider>
+      <Router>
+        <div className="App">
         <Routes>
           {/* Landing page route - only show if not authenticated */}
           <Route
@@ -113,6 +116,18 @@ function App() {
             }
           />
 
+          {/* Profile page route - only show if authenticated */}
+          <Route
+            path="/profile"
+            element={
+              user ? (
+                <ProfilePage />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />
+
           {/* Catch all route - redirect to appropriate page */}
           <Route
             path="*"
@@ -127,8 +142,9 @@ function App() {
           mode={authMode}
           onSuccess={handleAuthSuccess}
         />
-      </div>
-    </Router>
+        </div>
+      </Router>
+    </UserProvider>
   );
 }
 

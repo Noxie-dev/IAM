@@ -201,3 +201,59 @@ class UserUsageResponse(BaseModel):
                 "average_monthly_usage": 175.0
             }
         }
+
+
+class UserPreferences(BaseModel):
+    """Schema for user preferences"""
+    language: str = Field(default="English", description="Preferred language")
+    timezone: str = Field(default="Pacific Standard Time", description="User timezone")
+    email_notifications: bool = Field(default=True, description="Enable email notifications")
+    push_notifications: bool = Field(default=False, description="Enable push notifications")
+    sound_enabled: bool = Field(default=True, description="Enable sound notifications")
+    auto_save: bool = Field(default=True, description="Enable auto-save")
+    dark_mode: bool = Field(default=True, description="Enable dark mode")
+    compact_view: bool = Field(default=False, description="Enable compact view")
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "language": "English",
+                "timezone": "Pacific Standard Time",
+                "email_notifications": True,
+                "push_notifications": False,
+                "sound_enabled": True,
+                "auto_save": True,
+                "dark_mode": True,
+                "compact_view": False
+            }
+        }
+
+
+class UserStats(BaseModel):
+    """Schema for individual user statistics"""
+    total_meetings: int = Field(..., description="Total number of meetings")
+    total_hours: float = Field(..., description="Total hours of transcription")
+    monthly_minutes: int = Field(..., description="Monthly transcription minutes")
+    total_minutes: int = Field(..., description="Total transcription minutes")
+    remaining_minutes: int = Field(..., description="Remaining transcription minutes")
+    projects_count: int = Field(..., description="Number of projects")
+    team_members: int = Field(..., description="Number of team members")
+    account_age_days: int = Field(..., description="Account age in days")
+    subscription_tier: str = Field(..., description="Current subscription tier")
+    is_premium: bool = Field(..., description="Whether user has premium subscription")
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "total_meetings": 245,
+                "total_hours": 25.5,
+                "monthly_minutes": 150,
+                "total_minutes": 1530,
+                "remaining_minutes": 1050,
+                "projects_count": 12,
+                "team_members": 5,
+                "account_age_days": 365,
+                "subscription_tier": "premium",
+                "is_premium": True
+            }
+        }

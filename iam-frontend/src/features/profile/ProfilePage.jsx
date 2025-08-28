@@ -2,22 +2,24 @@ import React, { useState } from 'react';
 import ProfileCard from './components/ProfileCard';
 import ProfileTabs from './components/ProfileTabs';
 import PreferencesTab from './components/tabs/PreferencesTab';
+import ProfileEditTab from './components/tabs/ProfileEditTab';
 import TeamTab from './components/tabs/team/TeamTab';
 import InboxTab from './components/tabs/InboxTab';
 import NotificationsTab from './components/tabs/NotificationsTab';
 import SecurityTab from './components/tabs/SecurityTab';
 
 const ProfilePage = () => {
-  const [activeTab, setActiveTab] = useState('preferences');
+  const [activeTab, setActiveTab] = useState('profile');
 
   const renderTabContent = () => {
     switch (activeTab) {
+      case 'profile': return <ProfileEditTab />;
       case 'preferences': return <PreferencesTab />;
       case 'team': return <TeamTab />;
       case 'inbox': return <InboxTab />;
       case 'notifications': return <NotificationsTab />;
       case 'security': return <SecurityTab />;
-      default: return <PreferencesTab />;
+      default: return <ProfileEditTab />;
     }
   };
 

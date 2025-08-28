@@ -7,14 +7,19 @@ SQLAlchemy 2.0 User model with enhanced fields for SaaS platform
 
 import uuid
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 
-from sqlalchemy import String, Boolean, Integer, DateTime, Text, CheckConstraint
+from sqlalchemy import String, Boolean, Integer, DateTime, Text, CheckConstraint, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from app.core.database import Base
+
+if TYPE_CHECKING:
+    from .message import Message
+    from .notification import Notification
+    from .dice_job import DiceJob
 
 
 class User(Base):
@@ -45,6 +50,9 @@ class User(Base):
     last_name: Mapped[Optional[str]] = mapped_column(String(100))
     company_name: Mapped[Optional[str]] = mapped_column(String(200))
     phone: Mapped[Optional[str]] = mapped_column(String(20))
+    
+    # User preferences (stored as JSON)
+    preferences: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     
     # Subscription and billing
     subscription_tier: Mapped[str] = mapped_column(
@@ -119,6 +127,31 @@ class User(Base):
     dice_jobs: Mapped[List["DiceJob"]] = relationship(
         "DiceJob",
         foreign_keys="DiceJob.user_id",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="selectin"
+    )
+    
+    # Message relationships
+    sent_messages: Mapped[List["Message"]] = relationship(
+        "Message",
+        foreign_keys="Message.sender_id",
+        back_populates="sender",
+        cascade="all, delete-orphan",
+        lazy="selectin"
+    )
+    
+    received_messages: Mapped[List["Message"]] = relationship(
+        "Message",
+        foreign_keys="Message.recipient_id",
+        back_populates="recipient",
+        cascade="all, delete-orphan",
+        lazy="selectin"
+    )
+    
+    # Notification relationship
+    notifications: Mapped[List["Notification"]] = relationship(
+        "Notification",
         back_populates="user",
         cascade="all, delete-orphan",
         lazy="selectin"
