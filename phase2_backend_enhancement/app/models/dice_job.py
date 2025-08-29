@@ -345,3 +345,5 @@ class DiceJobLog(Base):
 # Add back_populates to DiceJob for logs
 DiceJob.logs = relationship("DiceJobLog", back_populates="job", cascade="all, delete-orphan")
 
+
+

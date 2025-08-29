@@ -29,3 +29,5 @@ const CategorySelector = ({ selectedCategory, onCategoryClick }) => {
 
 export default CategorySelector;
 
+
+

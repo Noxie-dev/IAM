@@ -25,3 +25,5 @@ const NoResults = ({ onReset }) => {
 
 export default NoResults;
 
+
+

@@ -41,3 +41,5 @@ export const useGemini = () => {
   return { generateContent, loading, error };
 };
 
+
+

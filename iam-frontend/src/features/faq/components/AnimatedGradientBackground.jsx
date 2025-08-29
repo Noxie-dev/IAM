@@ -23,3 +23,5 @@ AnimatedGradientBackground.displayName = 'AnimatedGradientBackground';
 
 export default AnimatedGradientBackground;
 
+
+

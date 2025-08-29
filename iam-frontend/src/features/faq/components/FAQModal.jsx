@@ -193,3 +193,5 @@ const FAQModal = ({ faq, relatedFAQs, onClose, onTagClick, onRelatedClick }) => 
 
 export default FAQModal;
 
+
+

@@ -503,3 +503,5 @@ class PreScanAlgorithm:
         
         return sum(confidences) / len(confidences)
 
+
+

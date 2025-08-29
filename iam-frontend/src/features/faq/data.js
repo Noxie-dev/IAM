@@ -33,3 +33,5 @@ export const categories = [
   { id: 'collaboration', name: 'Teams', icon: Users, color: 'from-pink-500 to-pink-600' }
 ];
 
+
+
